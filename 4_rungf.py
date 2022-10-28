@@ -90,8 +90,11 @@ def run_galfit(galaxy_id, band, rth=40, mask_prefix="Mask",
 
 start_time = time.time()
 
-nS = [1.5, 1.0, 0.5]
-for n, dir_output in enumerate(["output1/", "output2/", "output3/"]):
+nS = [1.5, 1.0, 0.5]*2
+mask_prefix = ["Mask"]*3 + ["Mask2"]*3
+# for n in np.arange(len(dir_output1)):
+for n, dir_output in enumerate(["output1/", "output2/", "output3/",
+                                "output4/", "output5/", "output6/"]):
     # dir_output = "../output2/"
     if (glob.glob(dir_output) == []):
         os.system("mkdir "+dir_output)
@@ -104,9 +107,10 @@ for n, dir_output in enumerate(["output1/", "output2/", "output3/"]):
         else:
             j = 2
     #     j = i // n_group
-        run_galfit(gid, init.band[j], rth=init.rth, mask_prefix="Mask",
+        run_galfit(gid, init.band[j], rth=init.rth, mask_prefix=mask_prefix[n],
                    dir_input="input", dir_output=dir_output,
                    n_sersic=nS[n])
+
 
 # Printing the running time
 print(f"--- {time.time()-start_time:.4f} seconds ---")
