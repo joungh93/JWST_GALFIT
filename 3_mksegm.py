@@ -32,10 +32,14 @@ import init_settings as init
 
 
 # ----- Step 3. Making new segmentation images ----- #
-def do_mask(input_image, segm_image, galaxy_id, output_prefix='Mask', #edge_pix=5,
+def do_mask(input_image, segm_image, galaxy_id, dir_input='input', output_prefix='Mask', #edge_pix=5,
             n_circular_mask=0, x0=None, y0=None, rad0=None,
             n_box_mask=0, xl=None, xh=None, yl=None, yh=None):
 #             rth=40, kron0=0, kfac=0.75, cxx0=0, cyy0=0, cxy0=0):
+
+    if (dir_input[-1] == "/"):
+        dir_input = dir_input[:-1]
+   
     img = fits.getdata(input_image)
     seg = fits.getdata(segm_image)
     segnew = copy.deepcopy(seg)
@@ -62,7 +66,8 @@ def do_mask(input_image, segm_image, galaxy_id, output_prefix='Mask', #edge_pix=
     
 #     segnew2 = segnew[edge_pix:-edge_pix+1, edge_pix:-edge_pix+1]
 
-    fits.writeto("input/"+output_prefix+f"_{galaxy_id:05d}.fits", segnew, overwrite=True)
+    fits.writeto(dir_input+"/"+output_prefix+f"_{galaxy_id:05d}.fits", segnew, overwrite=True)
+
 
 
 for i, gid in enumerate(np.hstack([init.id_z1, init.id_z2, init.id_z3])):
@@ -77,5 +82,5 @@ for i, gid in enumerate(np.hstack([init.id_z1, init.id_z2, init.id_z3])):
     cxx, cyy, cxy = init.dat['f277w'][['cxx','cyy','cxy']].iloc[gid-1].values
     do_mask(f"input/Input_{gid:05d}_"+init.band[j]+".fits", f"input/Segm_{gid:05d}.fits", gid,
             n_circular_mask=0, x0=[init.rth], y0=[init.rth], rad0=[2.0])
-
-
+    do_mask(f"input/Input_{gid:05d}_"+init.band[j]+".fits", f"input/Segm_{gid:05d}.fits", gid, output_prefix='Mask2',
+            n_circular_mask=1, x0=[init.rth], y0=[init.rth], rad0=[2.0])
