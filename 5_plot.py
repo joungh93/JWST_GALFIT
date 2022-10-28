@@ -76,6 +76,7 @@ def plot_results(galaxy_id, band, outfile, mask_prefix="Mask", edge_pix=5,
         else:
             sx, sy, smu, sr, sn, sba, spa = "99.9", "99.9", "99.9", "99.9", "99.9", "99.9", "99.9"
             e_sx, e_sy, e_smu, e_sr, e_sn, e_sba, e_spa = "99.9", "99.9", "99.9", "99.9", "99.9", "99.9", "99.9"
+            schi = "99.9"
     else:
         sx, sy, smu, sr, sn, sba, spa = "99.9", "99.9", "99.9", "99.9", "99.9", "99.9", "99.9"
         e_sx, e_sy, e_smu, e_sr, e_sn, e_sba, e_spa = "99.9", "99.9", "99.9", "99.9", "99.9", "99.9", "99.9"
@@ -170,7 +171,8 @@ def plot_results(galaxy_id, band, outfile, mask_prefix="Mask", edge_pix=5,
         print(f"ID {galaxy_id:05d}: Not successfully fitted\n")
         
     f = open(outfile, "a")
-    f.write(f"{galaxy_id:05d},"+band+","+sx+","+sy+","+smu+","+sr+","+sn+","+sba+","+spa+","+ \
+    f.write(f"{galaxy_id:05d},"+band+","+sx+","+e_sx+","+sy+","+e_sy+","+smu+","+e_smu+","+sr+","+e_sr+","+ \
+            sn+","+e_sn+","+sba+","+e_sba+","+spa+","+e_spa+","+ \
             f"{asym:.3f}"+","+schi+"\n")
     f.close()
     
@@ -179,9 +181,10 @@ def plot_results(galaxy_id, band, outfile, mask_prefix="Mask", edge_pix=5,
 
 # dir_output = "output2/"
 
-for n, dir_output in enumerate(["output1/", "output2/", "output3/"]):
+for n, dir_output in enumerate(["output1/", "output2/", "output3/",
+                                "output4/", "output5/", "output6/"]):
     f = open(dir_output+"output.csv", "w")
-    f.write("id,band,x,y,mu,r_e,n,b/a,pa,asym,chi2nu\n")
+    f.write("id,band,x,e_x,y,e_y,mu,e_mu,re,e_re,n,e_n,b/a,e_b/a,pa,e_pa,asym,chi2nu\n")
     f.close()
 
     fault_id = {'read':[], 'unstable':[], 'fit0':[]}
