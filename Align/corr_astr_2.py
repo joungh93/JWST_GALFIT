@@ -95,8 +95,8 @@ for i in range(len(imglist_jwst)):
     d1, h1 = fits.getdata(imglist_jwst[i], header=True, ext=1)    # SCI
     d2, h2 = fits.getdata(imglist_jwst[i], header=True, ext=2)    # VAR
 
-    aligned_sci, footprint = aa.apply_transform(tform, d1.byteswap().newbyteorder(), s0.dat)
-    aligned_var, footprint = aa.apply_transform(tform, d2.byteswap().newbyteorder(), s0.dat)
+    aligned_sci, footprint = aa.apply_transform(tform, d1.byteswap().newbyteorder(), s0.dat, inter_order=0)
+    aligned_var, footprint = aa.apply_transform(tform, d2.byteswap().newbyteorder(), s0.dat, inter_order=0)
 
     fhd1.data = aligned_sci
     fhd2.data = aligned_var

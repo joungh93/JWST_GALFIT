@@ -14,6 +14,9 @@ from pathlib import Path
 from reproject import reproject_interp
 from astropy.stats import sigma_clipped_stats
 
+import warnings
+warnings.filterwarnings('ignore')
+
 
 # ----- Basic setting ----- #
 os.system("rm -rfv config.* *.fits *.cat *.sh *.head *.png *.xml default.param")

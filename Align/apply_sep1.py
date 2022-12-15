@@ -19,7 +19,8 @@ class sep0:
     # ----- Initialize ----- #
     def __init__(self, input_image, img_extn=0, hdr_extn=0, tmp_dir="tmp",
                  bw=32, bh=32, fw=3, fh=3,
-                 thresh=3.0, minarea=5, db_nth=32, db_cont=0.005):
+                 thresh=3.0, minarea=5, db_nth=32, db_cont=0.005,
+                 output_segment=False):
         self.img = input_image
         # self.hdu = fits.open(input_image)[extn]
         dat = fits.getdata(input_image, ext=img_extn, header=False)
@@ -44,7 +45,8 @@ class sep0:
         # Source detection
         dat_sub = self.dat - self.backgr
         src = sep.extract(dat_sub, thresh, err=self.skysigma,
-                          minarea=minarea, deblend_nthresh=db_nth, deblend_cont=db_cont)
+                          minarea=minarea, deblend_nthresh=db_nth, deblend_cont=db_cont,
+                          segmentation_map=output_segment)
         src['theta'][src['theta'] < -np.pi/2.] = -np.pi/2. + 1.0e-7
         src['theta'][src['theta'] > np.pi/2.] = np.pi/2. - 1.0e-7
 
