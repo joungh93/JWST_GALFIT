@@ -143,10 +143,11 @@ fig, ax = plt.subplots(figsize=(4,4))
 plt_range = (mag_cnd & merr_cnd & size_cnd & \
              (phot_data['nir_detect']['flag'] <= 4))
 print(np.sum(plt_range))
-ax.plot(phot_data['nir_detect']['mag_auto'][plt_range],
+ax.plot(phot_data['nir_detect']['mag_aper'][plt_range],
         pxs*phot_data['nir_detect']['flxrad'][plt_range], 'o', ms=2.0, mew=0.0, alpha=0.6)
-ax.plot([15.0, 22.5], [0.11, 0.11], color='red', ls='--', lw=1, alpha=0.8)
-ax.plot([22.5, 25.0], [0.11, 0.09], color='red', ls='--', lw=1, alpha=0.8)
+ax.plot([15.0, 25.0], [0.17, 0.09], color='red', ls='--', lw=1, alpha=0.8)
+#ax.plot([15.0, 22.5], [0.11, 0.11], color='red', ls='--', lw=1, alpha=0.8)
+#ax.plot([22.5, 25.0], [0.11, 0.09], color='red', ls='--', lw=1, alpha=0.8)
 ax.plot([25.0, 32.5], [0.09, 0.09], color='red', ls='--', lw=1, alpha=0.8)
 # ax.axhline(0.09, 0, 1, color='red', ls='--', lw=1, alpha=0.8)
 # ax.axhline(0.11, 0, 1, color='red', ls='--', lw=1, alpha=0.8)
@@ -162,7 +163,7 @@ plt.close()
 
 
 # ----- For check ----- #
-IR_mag = phot_data['nir_detect']['mag_auto']
+IR_mag = phot_data['nir_detect']['mag_aper']
 Size50 = pxs * phot_data['nir_detect']['flxrad']
 
 poi1 = (plt_range & \
@@ -182,6 +183,14 @@ with open("check_point2.reg", "w") as f:
     for i in range(np.sum(poi2)):
         f.write(f"{phot_data['nir_detect']['x'].values[poi2][i]:.4f}  ")
         f.write(f"{phot_data['nir_detect']['y'].values[poi2][i]:.4f}\n")
+
+poi3 = (plt_range & \
+        (IR_mag <= 23.0) & \
+        ((Size50 <= 0.09) | (Size50 <= ((0.09-0.11)/(25.0-22.5))*(IR_mag-25.0)+0.09)))
+with open("check_point3.reg", "w") as f:
+    for i in range(np.sum(poi3)):
+        f.write(f"{phot_data['nir_detect']['x'].values[poi3][i]:.4f}  ")
+        f.write(f"{phot_data['nir_detect']['y'].values[poi3][i]:.4f}\n")
 # --------------------- #
 
 
@@ -234,4 +243,5 @@ ax.set_ylabel("F277W-F356W")
 plt.tight_layout()
 plt.savefig(dir_fig + "Fig1_JWST-CCD1.png", dpi=300)
 plt.close()
+
 
