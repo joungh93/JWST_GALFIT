@@ -57,7 +57,7 @@ for i in range(len(imgs_sci)):
             array, footprint = reproject_interp((d1, w1), w_ref, shape_out=shape_ref,
                                                 order='nearest-neighbor')
             for keys in ['CRVAL1', 'CRVAL2', 'CRPIX1', 'CRPIX2',
-                         'CD1_1' , 'CD2_2']:
+                         'CD1_1' , 'CD1_2',  'CD2_1',  'CD2_2']:
                 h1[keys] = h_ref[keys]
             # fits.writeto(filt+".fits", array, h1, overwrite=True)
             fits.writeto(filt+".fits", (dt['pxs'][idx_ref]/dt['pxs'][i])**2. * array, h1, overwrite=True)
