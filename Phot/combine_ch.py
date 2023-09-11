@@ -156,6 +156,19 @@ for i in tqdm.trange(len(imglists)):
     dfc.to_pickle(bands[i]+".pickle")
 
 
+# ----- Making a new segmentation image for hot-mode detected sources ----- #
+seg_hot, hdr_hot = fits.getdata("nir_detect_h_segm.fits", header=True)
+flg_hot = np.zeros_like(seg_hot)
+phot_h = np.genfromtxt('nir_detect_h.cat', dtype=None, encoding='ascii', names=colnames)
+dfh = pd.DataFrame(phot_h)
+for i in tqdm.trange(len(idx_hot)):
+    idx = idx_hot[i]
+    flg_hot[seg_hot == dfh.loc[idx, 'num']] = 1
+    seg_hot[seg_hot == dfh.loc[idx, 'num']] = dfc.loc[dfc['detect_flag'] == 'hot', 'num'].values[i]
+seg_hot[flg_hot == 0] = 0
+fits.writeto("nir_detect_h_segm2.fits", seg_hot, hdr_hot, overwrite=True)
+
+
 # Printing the running time
 print('--- %.4f seconds ---' %(time.time()-start_time))
 
