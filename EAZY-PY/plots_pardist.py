@@ -29,6 +29,10 @@ warnings.filterwarnings("ignore")
 c = 2.99792e+5    # km/s
 
 
+# ----- Field name ----- #
+fld_name = "NEP-TDF"
+
+
 # ----- Loading the photometry data ----- #
 dir_phot = "../Phot/"
 
@@ -390,30 +394,40 @@ plt.close()
 
 
 # ----- Plot: chi-square histogram ----- #
-chi2bins = np.linspace(0.0, 100.0, 40)
+chi2bins   = np.linspace(0.0, 100.0, 50)
+chi2cutval = 20.0
 
 fig, ax = plt.subplots(figsize=(6,4))
 ax.hist(dz['z_phot_chi2'][eff & UBVJp & Meff & Mcut & zcut],
         bins=chi2bins, color='dodgerblue', alpha=0.8)
-# ax.set_xscale('log')
-# ax.tick_params(axis='both', labelsize=12.0)
-# ax.set_xlabel(r"$M_{\ast}/M_{\odot}$", fontsize=12.0)
-# ax.set_ylabel(r"$N$", fontsize=12.0)
-# ax.set_xlim([1.0e+3, 1.0e+13])
-# # ax.set_xticks([0.1, 1.0, 10.0])
-# # ax.set_xticklabels(["0.1", "1.0", "10.0"])
-# ax.tick_params(width=1.1, length=8.0)
-# ax.tick_params(width=1.1, length=5.0, which='minor')
-# for axis in ['top','bottom','left','right']:
-#     ax.spines[axis].set_linewidth(1.1)
-# ax.text(0.04, 0.94, f"All sources : {np.sum(eff):d}",
-#         fontsize=12.5, color="black", #fontweight="bold", 
-#         ha="left", va="top", transform=ax.transAxes)
-# ax.text(0.04, 0.87, r"${\rm log}~M_{\ast}/M_{\odot} > 9.0$ : "+ \
-#         f"{np.sum(eff & UBVJp & Meff & (np.log10(dz['mass']) > 9.0)):d}",
-#         fontsize=12.5, color="black", #fontweight="bold", 
-#         ha="left", va="top", transform=ax.transAxes)
-# ax.axvline(10.0**(9.5), 0.0, 1.0, ls='--', lw=1.25, color='gray', alpha=0.8)
+ax.axvline(chi2cutval, 0.0, 1.0, color='gray', ls='--', lw=1.5, alpha=0.7)
+ax.set_xlabel(r"$\chi^{2}$", fontsize=12.0)
+ax.set_ylabel(r"$N$", fontsize=12.0)
+ax.tick_params(axis='both', labelsize=12.0)
+ax.text(0.50, 1.02, fld_name, fontsize=13.0, fontweight='bold',
+        ha="center", va="bottom", transform=ax.transAxes)
+chi10, chi25, chi50, chi75, chi90 = np.percentile(dz['z_phot_chi2'][eff & UBVJp & Meff & Mcut & zcut],
+                                                  [10., 25., 50., 75., 90.])
+ax.text(0.95, 0.90, r"$\chi^{2}_{10\%}$"+f" = {chi10:>5.2f}",
+        fontsize=10.0, color="k", #fontweight="bold",
+        ha="right", va="top", transform=ax.transAxes)
+ax.text(0.95, 0.82, r"$\chi^{2}_{25\%}$"+f" = {chi25:>5.2f}",
+        fontsize=10.0, color="k", #fontweight="bold",
+        ha="right", va="top", transform=ax.transAxes)
+ax.text(0.95, 0.74, r"$\chi^{2}_{50\%}$"+f" = {chi50:>5.2f}",
+        fontsize=10.0, color="k", #fontweight="bold",
+        ha="right", va="top", transform=ax.transAxes)
+ax.text(0.95, 0.66, r"$\chi^{2}_{75\%}$"+f" = {chi75:>5.2f}",
+        fontsize=10.0, color="k", #fontweight="bold",
+        ha="right", va="top", transform=ax.transAxes)
+ax.text(0.95, 0.58, r"$\chi^{2}_{90\%}$"+f" = {chi90:>5.2f}",
+        fontsize=10.0, color="k", #fontweight="bold",
+        ha="right", va="top", transform=ax.transAxes)
+ax.text(0.95, 0.40, r"$N_{\rm cut}/N_{\rm eff}$"+ \
+        f" = {np.sum(eff & UBVJp & Meff & Mcut & zcut & (dz['z_phot_chi2'] < chi2cutval)):d}/{np.sum(eff & UBVJp & Meff & Mcut & zcut):d} = "+ \
+        f"{np.sum(eff & UBVJp & Meff & Mcut & zcut & (dz['z_phot_chi2'] < chi2cutval))/np.sum(eff & UBVJp & Meff & Mcut & zcut):.2f}",
+        fontsize=10.0, color="k", #fontweight="bold",
+        ha="right", va="top", transform=ax.transAxes)
 plt.tight_layout()
 # plt.show(block=False)
 plt.savefig("Fig2-chi2hist.png", dpi=300)
@@ -425,60 +439,58 @@ fig, ax = plt.subplots(figsize=(6,4))
 idxs = dz['id'][eff & UBVJp & Meff & Mcut & zcut]-1
 ax.plot(phot_data['f200w']['mag_aper'].values[idxs],
         dz['z_phot_chi2'][eff & UBVJp & Meff & Mcut & zcut],
-        'o', ms=3.0, color='dodgerblue', alpha=0.8)
+        'o', ms=2.5, color='dodgerblue', alpha=0.8)
+ax.axhline(chi2cutval, 0.0, 1.0, color='gray', ls='--', lw=1.5, alpha=0.9)
+ax.set_xlabel("F200W", fontsize=12.0)
+ax.set_ylabel(r"$\chi^{2}$", fontsize=12.0)
+ax.tick_params(axis='both', labelsize=12.0)
+ax.text(0.50, 1.02, fld_name, fontsize=13.0, fontweight='bold',
+            ha="center", va="bottom", transform=ax.transAxes)
 # ax.set_xscale('log')
-# ax.tick_params(axis='both', labelsize=12.0)
-# ax.set_xlabel(r"$M_{\ast}/M_{\odot}$", fontsize=12.0)
-# ax.set_ylabel(r"$N$", fontsize=12.0)
-# ax.set_xlim([1.0e+3, 1.0e+13])
-# # ax.set_xticks([0.1, 1.0, 10.0])
-# # ax.set_xticklabels(["0.1", "1.0", "10.0"])
-# ax.tick_params(width=1.1, length=8.0)
-# ax.tick_params(width=1.1, length=5.0, which='minor')
-# for axis in ['top','bottom','left','right']:
-#     ax.spines[axis].set_linewidth(1.1)
-# ax.text(0.04, 0.94, f"All sources : {np.sum(eff):d}",
-#         fontsize=12.5, color="black", #fontweight="bold", 
-#         ha="left", va="top", transform=ax.transAxes)
-# ax.text(0.04, 0.87, r"${\rm log}~M_{\ast}/M_{\odot} > 9.0$ : "+ \
-#         f"{np.sum(eff & UBVJp & Meff & (np.log10(dz['mass']) > 9.0)):d}",
-#         fontsize=12.5, color="black", #fontweight="bold", 
-#         ha="left", va="top", transform=ax.transAxes)
-# ax.axvline(10.0**(9.5), 0.0, 1.0, ls='--', lw=1.25, color='gray', alpha=0.8)
+ax.set_xlim([17.5, 30.5])
+ax.set_ylim([-5., 100.])
 plt.tight_layout()
 # plt.show(block=False)
 plt.savefig("Fig2-chi2mag.png", dpi=300)
 plt.close()
 
 
-
 # ----- Plot: chi-square vs. z_phot diagram ----- #
 fig, ax = plt.subplots(figsize=(6,4))
 ax.plot(dz['z_phot'][eff & UBVJp & Meff & Mcut & zcut],
         dz['z_phot_chi2'][eff & UBVJp & Meff & Mcut & zcut],
-        'o', ms=3.0, color='dodgerblue', alpha=0.8)
-# ax.set_xscale('log')
-# ax.tick_params(axis='both', labelsize=12.0)
-# ax.set_xlabel(r"$M_{\ast}/M_{\odot}$", fontsize=12.0)
-# ax.set_ylabel(r"$N$", fontsize=12.0)
-# ax.set_xlim([1.0e+3, 1.0e+13])
-# # ax.set_xticks([0.1, 1.0, 10.0])
-# # ax.set_xticklabels(["0.1", "1.0", "10.0"])
-# ax.tick_params(width=1.1, length=8.0)
-# ax.tick_params(width=1.1, length=5.0, which='minor')
-# for axis in ['top','bottom','left','right']:
-#     ax.spines[axis].set_linewidth(1.1)
-# ax.text(0.04, 0.94, f"All sources : {np.sum(eff):d}",
-#         fontsize=12.5, color="black", #fontweight="bold", 
-#         ha="left", va="top", transform=ax.transAxes)
-# ax.text(0.04, 0.87, r"${\rm log}~M_{\ast}/M_{\odot} > 9.0$ : "+ \
-#         f"{np.sum(eff & UBVJp & Meff & (np.log10(dz['mass']) > 9.0)):d}",
-#         fontsize=12.5, color="black", #fontweight="bold", 
-#         ha="left", va="top", transform=ax.transAxes)
-# ax.axvline(10.0**(9.5), 0.0, 1.0, ls='--', lw=1.25, color='gray', alpha=0.8)
+        'o', ms=2.5, color='dodgerblue', alpha=0.8)
+ax.axhline(chi2cutval, 0.0, 1.0, color='gray', ls='--', lw=1.5, alpha=0.9)
+ax.set_xlabel(r"$z_{\rm phot}$", fontsize=12.0)
+ax.set_ylabel(r"$\chi^{2}$", fontsize=12.0)
+ax.tick_params(axis='both', labelsize=12.0)
+ax.text(0.50, 1.02, fld_name, fontsize=13.0, fontweight='bold',
+        ha="center", va="bottom", transform=ax.transAxes)
+ax.set_xscale('log')
+ax.set_ylim([-5., 100.])
 plt.tight_layout()
 # plt.show(block=False)
 plt.savefig("Fig2-chi2zph.png", dpi=300)
+plt.close()
+
+
+# ----- Plot: chi-square vs. stellar mass diagram ----- #
+fig, ax = plt.subplots(figsize=(6,4))
+ax.plot(dz['mass'][eff & UBVJp & Meff & Mcut & zcut],
+        dz['z_phot_chi2'][eff & UBVJp & Meff & Mcut & zcut],
+        'o', ms=2.5, color='dodgerblue', alpha=0.8)
+ax.axhline(chi2cutval, 0.0, 1.0, color='gray', ls='--', lw=1.5, alpha=0.9)
+ax.set_xlabel(r"log $M_{\ast}/M_{\odot}$", fontsize=12.0)
+ax.set_ylabel(r"$\chi^{2}$", fontsize=12.0)
+ax.tick_params(axis='both', labelsize=12.0)
+ax.text(0.50, 1.02, fld_name, fontsize=13.0, fontweight='bold',
+        ha="center", va="bottom", transform=ax.transAxes)
+ax.set_xscale('log')
+ax.set_xlim([10.**(7.5), 10.**(12.5)])
+ax.set_ylim([-5., 100.])
+plt.tight_layout()
+# plt.show(block=False)
+plt.savefig("Fig2-chi2mass.png", dpi=300)
 plt.close()
 
 
